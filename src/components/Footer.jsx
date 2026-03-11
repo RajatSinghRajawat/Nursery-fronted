@@ -1,8 +1,10 @@
 import { FiFacebook, FiInstagram, FiYoutube } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
 import { HiOutlineEnvelope, HiOutlineMapPin, HiOutlinePhone } from 'react-icons/hi2'
+import { useNavigate } from 'react-router-dom'
 
 function Footer() {
+  const navigate = useNavigate()
   const year = new Date().getFullYear()
 
   const quickLinks = [
@@ -22,6 +24,23 @@ function Footer() {
     { label: 'WhatsApp', icon: FaWhatsapp },
     { label: 'YouTube', icon: FiYoutube },
   ]
+
+  const goTo = (path) => {
+    const [pathname, hash] = path.split('#')
+    const targetPath = pathname || '/'
+
+    if (window.location.pathname !== targetPath) {
+      navigate(hash ? `${targetPath}#${hash}` : targetPath)
+    } else if (!hash) {
+      window.scrollTo({ top: 0, behavior: 'auto' })
+    }
+
+    if (hash) {
+      window.setTimeout(() => {
+        document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 80)
+    }
+  }
 
   return (
     <footer className="relative overflow-hidden bg-emerald-950 text-white">
@@ -55,6 +74,10 @@ function Footer() {
                   <a
                     key={item.label}
                     href={item.href}
+                    onClick={(event) => {
+                      event.preventDefault()
+                      goTo(item.href)
+                    }}
                     className="text-left text-sm text-emerald-100/75 transition hover:text-white"
                   >
                     {item.label}

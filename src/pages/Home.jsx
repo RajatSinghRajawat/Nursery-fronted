@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { HiOutlineShoppingBag, HiOutlineMagnifyingGlass, HiOutlineHomeModern, HiOutlineStar, HiOutlineHeart, HiOutlineTruck, HiOutlineShieldCheck, HiOutlineSparkles, HiOutlinePhone, HiOutlineArrowRight } from 'react-icons/hi2'
 import { GiTreehouse, GiCactus, GiSpade, GiPlantSeed, GiFlowerPot, GiLeafSwirl } from 'react-icons/gi'
 import { FiArrowRight } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
+import { getCurrentUser } from '../utils/auth'
+import { addCartItem } from '../utils/cart'
 
 const slidesData = [
   {
@@ -298,6 +301,7 @@ const galleryPreviewData = [
 
 
 function Home() {
+  const navigate = useNavigate()
   const [activeSlide, setActiveSlide] = useState(0)
 
   const goTo = (path) => {
@@ -307,11 +311,20 @@ function Home() {
     }
 
     if (window.location.pathname !== path) {
-      window.history.pushState({}, '', path)
-      window.dispatchEvent(new PopStateEvent('popstate'))
+      navigate(path)
     } else {
       window.scrollTo({ top: 0, behavior: 'auto' })
     }
+  }
+
+  const handleAddToCart = (product) => {
+    if (!getCurrentUser()) {
+      navigate('/login')
+      return
+    }
+
+    addCartItem(product)
+    navigate('/cart')
   }
 
   const iconMap = {
@@ -681,7 +694,7 @@ function Home() {
                   )}
                   {/* Action Bar on hover */}
                   <div className="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                    <button type="button" onClick={() => goTo('/login')} className="w-full py-4 bg-emerald-950 text-white rounded-2xl font-bold text-sm shadow-2xl flex items-center justify-center gap-2 hover:bg-emerald-800">
+                    <button type="button" onClick={() => handleAddToCart(product)} className="w-full py-4 bg-emerald-950 text-white rounded-2xl font-bold text-sm shadow-2xl flex items-center justify-center gap-2 hover:bg-emerald-800">
                       <HiOutlineShoppingBag className="w-5 h-5" />
                       Add to Cart
                     </button>
@@ -795,7 +808,7 @@ function Home() {
                       <HiOutlineHeart className="h-5 w-5" />
                     </button>
                     <div className="absolute inset-x-4 bottom-4 translate-y-5 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                      <button type="button" onClick={() => goTo('/login')} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-950 py-4 text-sm font-bold text-white shadow-2xl transition hover:bg-emerald-800">
+                      <button type="button" onClick={() => handleAddToCart(plant)} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-950 py-4 text-sm font-bold text-white shadow-2xl transition hover:bg-emerald-800">
                         <HiOutlineShoppingBag className="h-5 w-5" />
                         Add to Cart
                       </button>

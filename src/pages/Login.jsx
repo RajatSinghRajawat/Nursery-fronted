@@ -1,7 +1,10 @@
+import { useState } from 'react'
 import { FiFacebook } from 'react-icons/fi'
 import { FaGoogle } from 'react-icons/fa'
 import { IoLogoApple } from 'react-icons/io5'
 import { HiOutlineBolt, HiOutlineLockClosed, HiOutlineShieldCheck } from 'react-icons/hi2'
+import { useNavigate } from 'react-router-dom'
+import { loginUser } from '../utils/auth'
 
 const securityItems = [
   {
@@ -43,13 +46,26 @@ const socialLogins = [
 ]
 
 function Login() {
-  const goTo = (path) => {
-    if (window.location.pathname !== path) {
-      window.history.pushState({}, '', path)
-      window.dispatchEvent(new PopStateEvent('popstate'))
-    } else {
-      window.scrollTo({ top: 0, behavior: 'auto' })
+  const navigate = useNavigate()
+  const [formData, setFormData] = useState({ email: '', password: '' })
+  const [statusMessage, setStatusMessage] = useState('')
+
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setFormData((current) => ({ ...current, [name]: value }))
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    const result = loginUser(formData.email, formData.password)
+
+    if (!result.ok) {
+      setStatusMessage(result.message)
+      return
     }
+
+    setStatusMessage('')
+    navigate('/profile')
   }
 
   return (
@@ -106,12 +122,15 @@ function Login() {
               </h2>
             </div>
 
-            <form className="space-y-5" onSubmit={(event) => event.preventDefault()}>
+            <form className="space-y-5" onSubmit={handleSubmit}>
               <div>
                 <label className="mb-2 block text-sm font-semibold text-slate-600">Email Address</label>
                 <input
+                  name="email"
                   type="email"
                   placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
                   className="h-14 w-full rounded-2xl border border-emerald-100 bg-[#f8faf7] px-5 text-base text-slate-700 outline-none transition focus:border-emerald-500"
                 />
               </div>
@@ -119,11 +138,20 @@ function Login() {
               <div>
                 <label className="mb-2 block text-sm font-semibold text-slate-600">Password</label>
                 <input
+                  name="password"
                   type="password"
                   placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={handleChange}
                   className="h-14 w-full rounded-2xl border border-emerald-100 bg-[#f8faf7] px-5 text-base text-slate-700 outline-none transition focus:border-emerald-500"
                 />
               </div>
+
+              {statusMessage ? (
+                <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-600">
+                  {statusMessage}
+                </p>
+              ) : null}
 
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <label className="flex items-center gap-3 text-sm font-medium text-slate-600">
@@ -189,7 +217,7 @@ function Login() {
             <div className="mt-8 rounded-[2rem] bg-emerald-50 px-6 py-5 text-center">
               <p className="text-sm text-slate-600">
                 Don&apos;t have an account?
-                <button type="button" onClick={() => goTo('/register')} className="ml-2 border-0 bg-transparent font-bold text-emerald-700 transition hover:text-emerald-900">
+                <button type="button" onClick={() => navigate('/register')} className="ml-2 border-0 bg-transparent font-bold text-emerald-700 transition hover:text-emerald-900">
                   Create Account
                 </button>
               </p>

@@ -1,6 +1,13 @@
 import { useState, useRef, useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { getCurrentUser, logoutUser } from '../utils/auth'
+import { getCartCount } from '../utils/cart'
 
-const Navbar = ({ currentPage = 'home' }) => {
+const Navbar = () => {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [currentUser, setCurrentUser] = useState(() => getCurrentUser())
+  const [cartCount, setCartCount] = useState(() => getCartCount())
   const [isOpen, setIsOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isProductsOpen, setIsProductsOpen] = useState(false)
@@ -33,6 +40,24 @@ const Navbar = ({ currentPage = 'home' }) => {
       }
     }
   }, [])
+
+  useEffect(() => {
+    const syncCurrentUser = () => {
+      setCurrentUser(getCurrentUser())
+      setCartCount(getCartCount())
+    }
+
+    syncCurrentUser()
+    window.addEventListener('authchange', syncCurrentUser)
+    window.addEventListener('cartchange', syncCurrentUser)
+    window.addEventListener('storage', syncCurrentUser)
+
+    return () => {
+      window.removeEventListener('authchange', syncCurrentUser)
+      window.removeEventListener('cartchange', syncCurrentUser)
+      window.removeEventListener('storage', syncCurrentUser)
+    }
+  }, [location.pathname])
 
   // Handle products dropdown with proper delay
   const handleProductsMouseEnter = () => {
@@ -160,12 +185,31 @@ const Navbar = ({ currentPage = 'home' }) => {
     setOpenNested(null)
 
     if (window.location.pathname !== path) {
-      window.history.pushState({}, '', path)
-      window.dispatchEvent(new PopStateEvent('popstate'))
+      navigate(path)
     } else {
       window.scrollTo({ top: 0, behavior: 'auto' })
     }
   }
+
+  const handleLogout = () => {
+    logoutUser()
+    routeTo('/')
+  }
+
+  const currentPage =
+    location.pathname === '/about'
+      ? 'about'
+      : location.pathname === '/gallery'
+        ? 'gallery'
+        : location.pathname === '/testimonials'
+          ? 'testimonials'
+          : location.pathname === '/contact'
+            ? 'contact'
+            : location.pathname === '/login'
+              ? 'login'
+              : location.pathname === '/register'
+                ? 'register'
+                : 'home'
 
   const homeSectionLink = (section) => currentPage === 'about' ? `/#${section}` : `#${section}`
 
@@ -349,25 +393,45 @@ const Navbar = ({ currentPage = 'home' }) => {
           </button>
 
           {/* Cart Button */}
-          <button className="relative p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-full transition-all duration-200">
+          <button type="button" onClick={() => routeTo('/cart')} className="relative p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-full transition-all duration-200">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L21 7H7" />
               <circle cx="10" cy="20" r="1.3" />
               <circle cx="18" cy="20" r="1.3" />
             </svg>
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-600 text-white text-[10px] rounded-full flex items-center justify-center font-bold">
-              3
+            <span className="absolute -top-1 -right-1 min-w-[1rem] h-4 px-1 bg-green-600 text-white text-[10px] rounded-full flex items-center justify-center font-bold">
+              {cartCount}
             </span>
           </button>
 
           {/* Auth Buttons */}
           <div className="flex items-center gap-3 ml-2">
-            <button type="button" onClick={() => routeTo('/login')} className="border-0 bg-transparent px-5 py-2 text-sm font-semibold text-gray-700 transition-all hover:text-green-600">
-              Login
-            </button>
-            <button type="button" onClick={() => routeTo('/register')} className="px-6 py-2.5 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 shadow-md hover:shadow-lg transition-all active:scale-95">
-              Register
-            </button>
+            {currentUser ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => routeTo('/profile')}
+                  className="inline-flex items-center gap-3 rounded-full border border-emerald-100 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-950 transition hover:bg-emerald-100"
+                >
+                  <span className="grid h-8 w-8 place-items-center rounded-full bg-emerald-950 text-xs font-bold text-white">
+                    {(currentUser.fullName || 'U').slice(0, 1).toUpperCase()}
+                  </span>
+                  {currentUser.fullName}
+                </button>
+                <button type="button" onClick={handleLogout} className="border-0 bg-transparent px-4 py-2 text-sm font-semibold text-gray-700 transition-all hover:text-green-600">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <button type="button" onClick={() => routeTo('/login')} className="border-0 bg-transparent px-5 py-2 text-sm font-semibold text-gray-700 transition-all hover:text-green-600">
+                  Login
+                </button>
+                <button type="button" onClick={() => routeTo('/register')} className="px-6 py-2.5 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 shadow-md hover:shadow-lg transition-all active:scale-95">
+                  Register
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -510,12 +574,25 @@ const Navbar = ({ currentPage = 'home' }) => {
 
             {/* Mobile Auth */}
             <div className="border-t border-gray-100 pt-3 mt-3 space-y-2">
-              <button type="button" onClick={() => routeTo('/login')} className="w-full rounded-lg border-0 bg-transparent px-3 py-2.5 text-center text-gray-700 transition-all duration-200 hover:bg-green-50 hover:text-green-600">
-                Login
-              </button>
-              <button type="button" onClick={() => routeTo('/register')} className="w-full px-3 py-2.5 text-center text-white bg-gradient-to-br from-green-600 to-emerald-600 rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200">
-                Register
-              </button>
+              {currentUser ? (
+                <>
+                  <button type="button" onClick={() => routeTo('/profile')} className="w-full rounded-lg border-0 bg-emerald-50 px-3 py-2.5 text-center font-semibold text-emerald-900 transition-all duration-200 hover:bg-emerald-100">
+                    {currentUser.fullName}
+                  </button>
+                  <button type="button" onClick={handleLogout} className="w-full rounded-lg border-0 bg-transparent px-3 py-2.5 text-center text-gray-700 transition-all duration-200 hover:bg-green-50 hover:text-green-600">
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button type="button" onClick={() => routeTo('/login')} className="w-full rounded-lg border-0 bg-transparent px-3 py-2.5 text-center text-gray-700 transition-all duration-200 hover:bg-green-50 hover:text-green-600">
+                    Login
+                  </button>
+                  <button type="button" onClick={() => routeTo('/register')} className="w-full px-3 py-2.5 text-center text-white bg-gradient-to-br from-green-600 to-emerald-600 rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200">
+                    Register
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -1,7 +1,10 @@
+import { useState } from 'react'
 import { FiFacebook } from 'react-icons/fi'
 import { FaGoogle } from 'react-icons/fa'
 import { IoLogoApple } from 'react-icons/io5'
 import { HiOutlineHeart, HiOutlineShoppingBag, HiOutlineTicket, HiOutlineTruck } from 'react-icons/hi2'
+import { useNavigate } from 'react-router-dom'
+import { registerUser } from '../utils/auth'
 
 const socialRegisterItems = [
   {
@@ -45,13 +48,56 @@ const benefitItems = [
 ]
 
 function Register() {
-  const goTo = (path) => {
-    if (window.location.pathname !== path) {
-      window.history.pushState({}, '', path)
-      window.dispatchEvent(new PopStateEvent('popstate'))
-    } else {
-      window.scrollTo({ top: 0, behavior: 'auto' })
+  const navigate = useNavigate()
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    password: '',
+    confirmPassword: '',
+    address: '',
+    city: '',
+    agreed: false,
+  })
+  const [statusMessage, setStatusMessage] = useState('')
+
+  const handleChange = (event) => {
+    const { name, value, type, checked } = event.target
+    setFormData((current) => ({
+      ...current,
+      [name]: type === 'checkbox' ? checked : value,
+    }))
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+
+    if (formData.password !== formData.confirmPassword) {
+      setStatusMessage('Password and confirm password must match.')
+      return
     }
+
+    if (!formData.agreed) {
+      setStatusMessage('Please accept the Terms & Conditions to continue.')
+      return
+    }
+
+    const result = registerUser({
+      fullName: formData.fullName,
+      email: formData.email,
+      phone: formData.phone,
+      password: formData.password,
+      address: formData.address,
+      city: formData.city,
+    })
+
+    if (!result.ok) {
+      setStatusMessage(result.message)
+      return
+    }
+
+    setStatusMessage('')
+    navigate('/profile')
   }
 
   return (
@@ -107,47 +153,74 @@ function Register() {
               </h2>
             </div>
 
-            <form className="grid grid-cols-1 gap-5 md:grid-cols-2" onSubmit={(event) => event.preventDefault()}>
+            <form className="grid grid-cols-1 gap-5 md:grid-cols-2" onSubmit={handleSubmit}>
               <input
+                name="fullName"
                 type="text"
                 placeholder="Full Name"
+                value={formData.fullName}
+                onChange={handleChange}
                 className="h-14 rounded-2xl border border-emerald-100 bg-[#f8faf7] px-5 text-base text-slate-700 outline-none transition focus:border-emerald-500 md:col-span-2"
               />
               <input
+                name="email"
                 type="email"
                 placeholder="Email Address"
+                value={formData.email}
+                onChange={handleChange}
                 className="h-14 rounded-2xl border border-emerald-100 bg-[#f8faf7] px-5 text-base text-slate-700 outline-none transition focus:border-emerald-500"
               />
               <input
+                name="phone"
                 type="tel"
                 placeholder="Phone Number"
+                value={formData.phone}
+                onChange={handleChange}
                 className="h-14 rounded-2xl border border-emerald-100 bg-[#f8faf7] px-5 text-base text-slate-700 outline-none transition focus:border-emerald-500"
               />
               <input
+                name="password"
                 type="password"
                 placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
                 className="h-14 rounded-2xl border border-emerald-100 bg-[#f8faf7] px-5 text-base text-slate-700 outline-none transition focus:border-emerald-500"
               />
               <input
+                name="confirmPassword"
                 type="password"
                 placeholder="Confirm Password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
                 className="h-14 rounded-2xl border border-emerald-100 bg-[#f8faf7] px-5 text-base text-slate-700 outline-none transition focus:border-emerald-500"
               />
               <input
+                name="address"
                 type="text"
                 placeholder="Address"
+                value={formData.address}
+                onChange={handleChange}
                 className="h-14 rounded-2xl border border-emerald-100 bg-[#f8faf7] px-5 text-base text-slate-700 outline-none transition focus:border-emerald-500"
               />
               <input
+                name="city"
                 type="text"
                 placeholder="City"
+                value={formData.city}
+                onChange={handleChange}
                 className="h-14 rounded-2xl border border-emerald-100 bg-[#f8faf7] px-5 text-base text-slate-700 outline-none transition focus:border-emerald-500"
               />
 
               <label className="flex items-start gap-3 rounded-[1.5rem] border border-emerald-100 bg-[#f8faf7] px-5 py-4 text-sm leading-7 text-slate-600 md:col-span-2">
-                <input type="checkbox" className="mt-1 h-4 w-4 rounded border-emerald-200 text-emerald-700" />
+                <input name="agreed" type="checkbox" checked={formData.agreed} onChange={handleChange} className="mt-1 h-4 w-4 rounded border-emerald-200 text-emerald-700" />
                 <span>I agree to the Terms &amp; Conditions and confirm that my account details are correct.</span>
               </label>
+
+              {statusMessage ? (
+                <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-600 md:col-span-2">
+                  {statusMessage}
+                </p>
+              ) : null}
 
               <div className="md:col-span-2">
                 <button
@@ -185,7 +258,7 @@ function Register() {
             <div className="mt-8 rounded-[2rem] bg-emerald-50 px-6 py-5 text-center">
               <p className="text-sm text-slate-600">
                 Already have an account?
-                <button type="button" onClick={() => goTo('/login')} className="ml-2 border-0 bg-transparent font-bold text-emerald-700 transition hover:text-emerald-900">
+                <button type="button" onClick={() => navigate('/login')} className="ml-2 border-0 bg-transparent font-bold text-emerald-700 transition hover:text-emerald-900">
                   Login Here
                 </button>
               </p>
