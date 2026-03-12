@@ -11,6 +11,12 @@ import Contact from './pages/Contact'
 import Login from './pages/Login'
 import Profile from './pages/Profile'
 import Register from './pages/Register'
+import IndoorPlants from './pages/IndoorPlants'
+import OutdoorPlants from './pages/OutdoorPlants'
+import GardeningTools from './pages/GardeningTools'
+import PotsPlanters from './pages/PotsPlanters'
+import SeedsBulbs from './pages/SeedsBulbs'
+import PlantCare from './pages/PlantCare'
 
 const appRoutes = [
   { path: '/', element: <Home /> },
@@ -22,6 +28,12 @@ const appRoutes = [
   { path: '/login', element: <Login /> },
   { path: '/profile', element: <Profile /> },
   { path: '/register', element: <Register /> },
+  { path: '/products/indoor-plants', element: <IndoorPlants /> },
+  { path: '/products/outdoor-plants', element: <OutdoorPlants /> },
+  { path: '/products/gardening-tools', element: <GardeningTools /> },
+  { path: '/products/pots-planters', element: <PotsPlanters /> },
+  { path: '/products/seeds-bulbs', element: <SeedsBulbs /> },
+  { path: '/products/plant-care', element: <PlantCare /> },
 ]
 
 function App() {
