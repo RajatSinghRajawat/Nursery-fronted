@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { HiOutlineMinus, HiOutlinePlus, HiOutlineShoppingBag, HiOutlineTicket } from 'react-icons/hi2'
-import { getCurrentUser } from '../utils/auth'
+import { getCurrentUser } from '../utils/userStore'
 import { getCartItems, getCartTotal, updateCartItemQuantity } from '../utils/cart'
 
 function Cart() {

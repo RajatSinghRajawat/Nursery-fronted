@@ -1,10 +1,7 @@
 import { useState } from 'react'
-import { FiFacebook } from 'react-icons/fi'
-import { FaGoogle } from 'react-icons/fa'
-import { IoLogoApple } from 'react-icons/io5'
 import { HiOutlineBolt, HiOutlineLockClosed, HiOutlineShieldCheck } from 'react-icons/hi2'
 import { useNavigate } from 'react-router-dom'
-import { loginUser } from '../utils/auth'
+import { loginUser } from '../utils/userStore'
 
 const securityItems = [
   {
@@ -24,24 +21,6 @@ const securityItems = [
     title: 'Fast Access',
     description: 'Quick login experience so returning customers can continue shopping without friction.',
     icon: HiOutlineBolt,
-  },
-]
-
-const socialLogins = [
-  {
-    id: 1,
-    label: 'Login with Google',
-    icon: FaGoogle,
-  },
-  {
-    id: 2,
-    label: 'Login with Facebook',
-    icon: FiFacebook,
-  },
-  {
-    id: 3,
-    label: 'Login with Apple',
-    icon: IoLogoApple,
   },
 ]
 
@@ -158,7 +137,7 @@ function Login() {
                   <input type="checkbox" className="h-4 w-4 rounded border-emerald-200 text-emerald-700" />
                   Remember me
                 </label>
-                <button type="button" onClick={() => document.getElementById('forgot-password-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' })} className="border-0 bg-transparent text-sm font-bold text-emerald-700 transition hover:text-emerald-900">
+                <button type="button" onClick={() => navigate('/forgot-password')} className="border-0 bg-transparent text-sm font-bold text-emerald-700 transition hover:text-emerald-900">
                   Forgot Password?
                 </button>
               </div>
@@ -170,49 +149,6 @@ function Login() {
                 Login
               </button>
             </form>
-
-            <div id="forgot-password-card" className="mt-10 rounded-[2rem] border border-emerald-100 bg-[#f8faf7] p-6">
-              <p className="text-sm font-bold uppercase tracking-[0.22em] text-emerald-700">Forgot Password</p>
-              <p className="mt-3 text-sm leading-7 text-slate-600">
-                If you forgot your password, enter your email and we will send a reset link.
-              </p>
-              <div className="mt-5 flex flex-col gap-4 sm:flex-row">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="h-12 flex-1 rounded-full border border-emerald-100 bg-white px-5 text-sm text-slate-700 outline-none transition focus:border-emerald-500"
-                />
-                <button
-                  type="button"
-                  className="inline-flex h-12 items-center justify-center rounded-full bg-white px-6 text-sm font-bold text-emerald-900 shadow-sm transition hover:bg-emerald-50"
-                >
-                  Send Reset Link
-                </button>
-              </div>
-            </div>
-
-            <div className="my-8 flex items-center gap-4">
-              <span className="h-px flex-1 bg-emerald-100" />
-              <span className="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Or continue with</span>
-              <span className="h-px flex-1 bg-emerald-100" />
-            </div>
-
-            <div className="space-y-4">
-              {socialLogins.map((item) => {
-                const Icon = item.icon
-
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className="flex h-14 w-full items-center justify-center gap-3 rounded-2xl border border-emerald-100 bg-white text-sm font-bold text-emerald-950 transition hover:bg-emerald-50"
-                  >
-                    <Icon className="h-5 w-5" />
-                    {item.label}
-                  </button>
-                )
-              })}
-            </div>
 
             <div className="mt-8 rounded-[2rem] bg-emerald-50 px-6 py-5 text-center">
               <p className="text-sm text-slate-600">

@@ -1,28 +1,7 @@
 import { useState } from 'react'
-import { FiFacebook } from 'react-icons/fi'
-import { FaGoogle } from 'react-icons/fa'
-import { IoLogoApple } from 'react-icons/io5'
 import { HiOutlineHeart, HiOutlineShoppingBag, HiOutlineTicket, HiOutlineTruck } from 'react-icons/hi2'
 import { useNavigate } from 'react-router-dom'
-import { registerUser } from '../utils/auth'
-
-const socialRegisterItems = [
-  {
-    id: 1,
-    label: 'Sign Up With Google',
-    icon: FaGoogle,
-  },
-  {
-    id: 2,
-    label: 'Sign Up With Facebook',
-    icon: FiFacebook,
-  },
-  {
-    id: 3,
-    label: 'Sign Up With Apple',
-    icon: IoLogoApple,
-  },
-]
+import { registerUser } from '../utils/userStore'
 
 const benefitItems = [
   {
@@ -231,29 +210,6 @@ function Register() {
                 </button>
               </div>
             </form>
-
-            <div className="my-8 flex items-center gap-4">
-              <span className="h-px flex-1 bg-emerald-100" />
-              <span className="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Or sign up with</span>
-              <span className="h-px flex-1 bg-emerald-100" />
-            </div>
-
-            <div className="space-y-4">
-              {socialRegisterItems.map((item) => {
-                const Icon = item.icon
-
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className="flex h-14 w-full items-center justify-center gap-3 rounded-2xl border border-emerald-100 bg-white text-sm font-bold text-emerald-950 transition hover:bg-emerald-50"
-                  >
-                    <Icon className="h-5 w-5" />
-                    {item.label}
-                  </button>
-                )
-              })}
-            </div>
 
             <div className="mt-8 rounded-[2rem] bg-emerald-50 px-6 py-5 text-center">
               <p className="text-sm text-slate-600">

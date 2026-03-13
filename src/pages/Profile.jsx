@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { HiOutlineShoppingBag, HiOutlineSparkles, HiOutlineStar, HiOutlineUser } from 'react-icons/hi2'
-import { logoutUser } from '../utils/auth'
+import { logoutUser } from '../utils/userStore'
 import { getActivitySummary } from '../utils/cart'
 
 function Profile() {
@@ -52,12 +52,12 @@ function Profile() {
         <div className="absolute inset-0 bg-gradient-to-br from-[#103d2a] via-[#1f6a47] to-[#b7d66d]" />
         <div className="absolute inset-0 opacity-80" style={{ backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 46%)' }} />
 
-        <div className="relative mx-auto max-w-[1400px]">
+        <div className="relative mx-auto max-w-[1400px] text-center">
           <p className="text-sm font-bold uppercase tracking-[0.28em] text-emerald-100/85">My Profile</p>
-          <h1 className="mt-5 max-w-4xl text-5xl font-bold leading-tight md:text-6xl">
+          <h1 className="mx-auto mt-5 max-w-4xl text-5xl font-bold leading-tight md:text-6xl">
             Welcome back, {firstName}
           </h1>
-          <p className="mt-6 max-w-2xl text-base leading-8 text-white/82 sm:text-lg">
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-white/82 sm:text-lg">
             Track what you selected, how many plants you want to buy, and the points you have earned from your nursery activity.
           </p>
         </div>

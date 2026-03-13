@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { getCurrentUser, logoutUser } from '../utils/auth'
+import { getCurrentUser, logoutUser } from '../utils/userStore'
 import { getCartCount } from '../utils/cart'
 import { productCategories } from '../data/productCategories'
 
@@ -28,6 +28,7 @@ function Navbar() {
   const productsRef = useRef(null)
   const productsButtonRef = useRef(null)
   const searchButtonRef = useRef(null)
+  const closeTimeoutRef = useRef(null)
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -44,6 +45,14 @@ function Navbar() {
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current)
+      }
+    }
   }, [])
 
   useEffect(() => {
@@ -78,9 +87,27 @@ function Navbar() {
   }
 
   const toggleProductsMenu = () => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current)
+    }
     setIsSearchOpen(false)
     setIsProductsOpen((current) => !current)
     setOpenCategories(defaultOpenCategories)
+  }
+
+  const openProductsMenu = () => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current)
+    }
+    setIsSearchOpen(false)
+    setIsProductsOpen(true)
+  }
+
+  const closeProductsMenu = () => {
+    closeTimeoutRef.current = setTimeout(() => {
+      setIsProductsOpen(false)
+      setOpenCategories(defaultOpenCategories)
+    }, 140)
   }
 
   const toggleSearch = () => {
@@ -102,6 +129,10 @@ function Navbar() {
     setOpenCategories((current) =>
       current.includes(index) ? current.filter((item) => item !== index) : [...current, index]
     )
+  }
+
+  const openCategoryOnHover = (index) => {
+    setOpenCategories((current) => (current.includes(index) ? current : [...current, index]))
   }
 
   const currentPage =
@@ -149,7 +180,7 @@ function Navbar() {
             <span className={`absolute bottom-0 left-0 h-0.5 bg-green-600 transition-all duration-300 ${currentPage === 'about' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
           </button>
 
-          <div className="static">
+          <div className="static" onMouseEnter={openProductsMenu} onMouseLeave={closeProductsMenu}>
             <button
               ref={productsButtonRef}
               type="button"
@@ -175,7 +206,7 @@ function Navbar() {
               >
                 <div className="grid grid-cols-3 gap-x-12 gap-y-10">
                   {productCategories.map((category, idx) => (
-                    <div key={category.slug} className="space-y-2">
+                    <div key={category.slug} className="space-y-2" onMouseEnter={() => openCategoryOnHover(idx)}>
                       <button
                         type="button"
                         onClick={() => toggleCategory(idx)}

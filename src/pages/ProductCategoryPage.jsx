@@ -1,7 +1,7 @@
 import { HiOutlineArrowRight, HiOutlineCheckBadge, HiOutlineSparkles } from 'react-icons/hi2'
 import { useNavigate } from 'react-router-dom'
 import { addCartItem } from '../utils/cart'
-import { getCurrentUser } from '../utils/auth'
+import { getCurrentUser } from '../utils/userStore'
 
 const iconBadgeClass = {
   Leaf: 'from-emerald-500 to-lime-400',

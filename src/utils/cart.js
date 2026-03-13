@@ -1,4 +1,4 @@
-import { getCurrentUser } from './auth'
+import { getCurrentUser } from './userStore'
 
 const CARTS_KEY = 'nurser_carts'
 
@@ -13,7 +13,7 @@ function getCartStore() {
     return {}
   }
 }
-
+  
 function setCartStore(store) {
   window.localStorage.setItem(CARTS_KEY, JSON.stringify(store))
   notifyCartChange()

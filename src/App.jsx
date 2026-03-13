@@ -11,6 +11,8 @@ import Contact from './pages/Contact'
 import Login from './pages/Login'
 import Profile from './pages/Profile'
 import Register from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
+import Products from './pages/Products'
 import IndoorPlants from './pages/IndoorPlants'
 import OutdoorPlants from './pages/OutdoorPlants'
 import GardeningTools from './pages/GardeningTools'
@@ -23,11 +25,13 @@ const appRoutes = [
   { path: '/about', element: <About /> },
   { path: '/cart', element: <Cart /> },
   { path: '/gallery', element: <Gallery /> },
+  { path: '/products', element: <Products /> },
   { path: '/testimonials', element: <Testimonials /> },
   { path: '/contact', element: <Contact /> },
   { path: '/login', element: <Login /> },
   { path: '/profile', element: <Profile /> },
   { path: '/register', element: <Register /> },
+  { path: '/forgot-password', element: <ForgotPassword /> },
   { path: '/products/indoor-plants', element: <IndoorPlants /> },
   { path: '/products/outdoor-plants', element: <OutdoorPlants /> },
   { path: '/products/gardening-tools', element: <GardeningTools /> },

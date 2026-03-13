@@ -10,7 +10,7 @@ function Footer() {
   const quickLinks = [
     { label: 'Home', href: '/' },
     { label: 'About', href: '/about' },
-    { label: 'Products', href: '/#products' },
+    { label: 'Products', href: '/products' },
     { label: 'Gallery', href: '/gallery' },
     { label: 'Testimonials', href: '/testimonials' },
     { label: 'Contact', href: '/contact' },
