@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { HiOutlineShoppingBag, HiOutlineMagnifyingGlass, HiOutlineHomeModern, HiOutlineStar, HiOutlineHeart, HiOutlineTruck, HiOutlineShieldCheck, HiOutlineSparkles, HiOutlinePhone, HiOutlineArrowRight } from 'react-icons/hi2'
 import { GiTreehouse, GiCactus, GiSpade, GiPlantSeed, GiFlowerPot, GiLeafSwirl } from 'react-icons/gi'
 import { FiArrowRight } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
+import { getCurrentUser } from '../utils/userStore'
+import { addCartItem } from '../utils/cart'
 
 const slidesData = [
   {
@@ -81,6 +84,7 @@ const categoriesData = [
     description: 'Breathe life into your space with air-purifying indoor greenery.',
     image: 'https://images.unsplash.com/photo-1545241047-6083a3684587?q=80&w=1000&auto=format&fit=crop',
     iconName: 'Indoor',
+    path: '/products/indoor-plants',
   },
   {
     id: 2,
@@ -88,6 +92,7 @@ const categoriesData = [
     description: 'Transform your outdoor areas into lush, vibrant garden retreats.',
     image: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?q=80&w=1000&auto=format&fit=crop',
     iconName: 'Outdoor',
+    path: '/products/outdoor-plants',
   },
   {
     id: 3,
@@ -95,6 +100,7 @@ const categoriesData = [
     description: 'Unique succulents and cacti for a minimal, low-maintenance aesthetic.',
     image: 'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=80&w=1000&auto=format&fit=crop',
     iconName: 'Cactus',
+    path: '/products/indoor-plants#succulents',
   },
   {
     id: 4,
@@ -102,6 +108,7 @@ const categoriesData = [
     description: 'Handcrafted planters to perfectly complement your botanical collection.',
     image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?q=80&w=1000&auto=format&fit=crop',
     iconName: 'Pots',
+    path: '/products/pots-planters',
   },
   {
     id: 5,
@@ -109,6 +116,7 @@ const categoriesData = [
     description: 'Professional grade tools designed for the modern plant enthusiast.',
     image: 'https://img.freepik.com/free-photo/carpenter-works-with-tree_1157-18664.jpg?semt=ais_rp_50_assets&w=740&q=80',
     iconName: 'Tools',
+    path: '/products/gardening-tools',
   },
   {
     id: 6,
@@ -116,6 +124,7 @@ const categoriesData = [
     description: 'Start your green legacy with our premium non-GMO seed collection.',
     image: 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?q=80&w=1000&auto=format&fit=crop',
     iconName: 'Seeds',
+    path: '/products/seeds-bulbs',
   },
 ];
 
@@ -298,6 +307,7 @@ const galleryPreviewData = [
 
 
 function Home() {
+  const navigate = useNavigate()
   const [activeSlide, setActiveSlide] = useState(0)
 
   const goTo = (path) => {
@@ -307,11 +317,20 @@ function Home() {
     }
 
     if (window.location.pathname !== path) {
-      window.history.pushState({}, '', path)
-      window.dispatchEvent(new PopStateEvent('popstate'))
+      navigate(path)
     } else {
       window.scrollTo({ top: 0, behavior: 'auto' })
     }
+  }
+
+  const handleAddToCart = (product) => {
+    if (!getCurrentUser()) {
+      navigate('/login')
+      return
+    }
+
+    addCartItem(product)
+    navigate('/cart')
   }
 
   const iconMap = {
@@ -610,7 +629,7 @@ function Home() {
 
                     <div className="flex items-center gap-4 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-700 delay-300">
                       <a
-                        href={`#${category.title.toLowerCase().replace(/\s+/g, '-')}`}
+                        href={category.path}
                         className="inline-flex items-center gap-2 px-6 py-3 bg-white text-emerald-950 text-sm font-bold rounded-full hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105"
                       >
                         Browse Collection
@@ -627,7 +646,7 @@ function Home() {
           </div>
 
           <div className="mt-20 text-center">
-            <button type="button" onClick={() => goTo('#categories')} className="inline-flex items-center gap-3 text-emerald-900 font-bold hover:text-emerald-600 transition-colors">
+            <button type="button" onClick={() => goTo('/products')} className="inline-flex items-center gap-3 text-emerald-900 font-bold hover:text-emerald-600 transition-colors">
               <span className="w-8 h-[1px] bg-emerald-300"></span>
               View All Categories
               <HiOutlineMagnifyingGlass className="w-5 h-5" />
@@ -681,7 +700,7 @@ function Home() {
                   )}
                   {/* Action Bar on hover */}
                   <div className="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                    <button type="button" onClick={() => goTo('/login')} className="w-full py-4 bg-emerald-950 text-white rounded-2xl font-bold text-sm shadow-2xl flex items-center justify-center gap-2 hover:bg-emerald-800">
+                    <button type="button" onClick={() => handleAddToCart(product)} className="w-full py-4 bg-emerald-950 text-white rounded-2xl font-bold text-sm shadow-2xl flex items-center justify-center gap-2 hover:bg-emerald-800">
                       <HiOutlineShoppingBag className="w-5 h-5" />
                       Add to Cart
                     </button>
@@ -795,7 +814,7 @@ function Home() {
                       <HiOutlineHeart className="h-5 w-5" />
                     </button>
                     <div className="absolute inset-x-4 bottom-4 translate-y-5 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                      <button type="button" onClick={() => goTo('/login')} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-950 py-4 text-sm font-bold text-white shadow-2xl transition hover:bg-emerald-800">
+                      <button type="button" onClick={() => handleAddToCart(plant)} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-950 py-4 text-sm font-bold text-white shadow-2xl transition hover:bg-emerald-800">
                         <HiOutlineShoppingBag className="h-5 w-5" />
                         Add to Cart
                       </button>
